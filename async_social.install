@@ -8,6 +8,7 @@
  * Implements hook_uninstall().
  */
 function async_social_uninstall() {
-  variable_del('async_social_links');
+  variable_del('async_social_buttons');
   variable_del('async_social_nodetypes');
+  variable_del('async_social_viewmodes');
 }
