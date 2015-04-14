@@ -1,0 +1,15 @@
+/* Welcome to Compass.
+ * `compass watch` will generate async_social.css inside module's css directory
+ * css then is added via drupal_add_css() inside async_social.module */
+
+#async-social-buttons {
+	line-height: 1;
+	.async-social-button {
+		display: inline-block;
+		vertical-align: top;
+		margin-right: 25px;
+		&.tweet {
+			margin-right: -15px;
+		}
+	}
+}

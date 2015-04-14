@@ -43,6 +43,13 @@ function async_social_settings_form() {
 		'#default_value' => variable_get('async_social_viewmodes', array()),
 		'#options'       => _view_modes()
 	);
+	$form['async_social_regions'] = array(
+		'#type'          => 'checkboxes',
+		'#title'         => t('Default theme regions'),
+		'#description'   => t('Display buttons for these view modes.'),
+		'#default_value' => variable_get('async_social_viewmodes', array()),
+		'#options'       => _view_modes()
+	);
 	return system_settings_form($form);
 }
 
@@ -54,6 +61,11 @@ function async_social_node_view($node, $view_mode) {
 	$node_types = variable_get('async_social_nodetypes', array());
 	$view_modes = variable_get('async_social_viewmodes', array());
 	if (in_array($node->type, $node_types, TRUE) && in_array($view_mode, $view_modes, TRUE)) {
+		// and create the new region
+		$node->content['async_social'] = array(
+			'#prefix' => '<div id="async-social-buttons">',
+			'#suffix' => '</div>'
+		);
 		// then look for chosen button types and prepare buttons
 		$button_types = variable_get('async_social_buttons', array());
 		$buttons = _async_social_buttons($node);
@@ -61,11 +73,15 @@ function async_social_node_view($node, $view_mode) {
 			// and finally add them
 			if($key === $value) {
 				$node->content['async_social'][$key] = array(
-					'#markup' => $buttons[$key]
+					'#markup' => $buttons[$key],
+					'#prefix' => '<div class="' . $key . ' async-social-button">',
+					'#suffix' => '</div>'
 				);
 			}
 		}
 	}
+	// $default_theme = variable_get('theme_default', NULL);
+	// $regions = system_region_list($default_theme, REGIONS_ALL);
 }
 
 /**
@@ -105,6 +121,8 @@ function async_social_page_build(&$page) {
     'type' => 'inline',
     'scope' => 'footer'
   ));
+
+  drupal_add_css(drupal_get_path('module', 'async_social') . '/css/async_social.css');
 }
 
 /**
