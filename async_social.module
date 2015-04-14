@@ -98,13 +98,13 @@ function async_social_page_build(&$page) {
 			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
 		})();";
   drupal_add_js($google_script, array(
-    'type' => 'inline',
-    'scope' => 'footer'
+    'type'	=> 'inline',
+    'scope'	=> 'footer'
   ));
 
   $twitter_script = 'window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));';
   drupal_add_js($twitter_script, array(
-    'type' => 'inline',
+    'type'	=> 'inline',
     'scope' => 'footer'
   ));
   // TO DO implement facebook lang codes http://www.facebook.com/translations/FacebookLocales.xml
@@ -114,7 +114,7 @@ function async_social_page_build(&$page) {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) return;
     js = d.createElement(s); js.id = id;
-    js.async=true; js.src = "//connect.facebook.net/' . $facebook_lang . '/sdk.js#xfbml=1&version=v2.3";
+    js.async = true; js.src = "//connect.facebook.net/' . $facebook_lang . '/sdk.js#xfbml=1&version=v2.3";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, \'script\', \'facebook-jssdk\'));';
 	drupal_add_js($facebook_script, array(
