@@ -1,0 +1,5 @@
+name = Async Social Buttons With Counters
+description = Add asynchronously loaded social buttons (Like, Tweet, +1) to selected node types
+core = 7.x
+package = Custom
+configure = admin/config/system/async_social
