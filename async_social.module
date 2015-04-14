@@ -19,64 +19,121 @@ function async_social_menu() {
 }
 
 /**
- * Implementation of hook_form_FORM_ID().
+ * Implements hook_form().
  */
 function async_social_settings_form() {
-	$form['async_social_links'] = array(
+	$form['async_social_buttons'] = array(
 		'#type'          => 'checkboxes',
 		'#title'         => t('Social Networks'),
 		'#description'   => t('Display buttons for these social networks.'),
-		'#default_value' => variable_get('async_social_links', array()),
-		'#options'       => array('like' => 'Facebook Like', 'tweet' => 'Twitter Tweet', 'plusone' => 'Google +1'),
+		'#default_value' => variable_get('async_social_buttons', array()),
+		'#options'       => array('like' => 'Facebook Like', 'tweet' => 'Twitter Tweet', 'plusone' => 'Google +1')
 	);
 	$form['async_social_nodetypes'] = array(
 		'#type'          => 'checkboxes',
 		'#title'         => t('Node types'),
 		'#description'   => t('Display buttons for these node types.'),
 		'#default_value' => variable_get('async_social_nodetypes', array()),
-		'#options'       => node_type_get_names(),
+		'#options'       => node_type_get_names()
+	);
+	$form['async_social_viewmodes'] = array(
+		'#type'          => 'checkboxes',
+		'#title'         => t('View modes'),
+		'#description'   => t('Display buttons for these view modes.'),
+		'#default_value' => variable_get('async_social_viewmodes', array()),
+		'#options'       => _view_modes()
 	);
 	return system_settings_form($form);
 }
 
 /**
- * Implementation of hook_node_view().
+ * Implements hook_node_view().
  */
 function async_social_node_view($node, $view_mode) {
+	// first look for matching node types and view modes
 	$node_types = variable_get('async_social_nodetypes', array());
-	$link_types = variable_get('async_social_links', array());
-	$share_links = _async_social_links($node);
-
-	foreach ($share_links as $key => $value) {
-		if(isset($link_types[$key]) && !is_numeric($link_types[$key])) {
-			$links_array[$key] = $share_links[$key];
+	$view_modes = variable_get('async_social_viewmodes', array());
+	if (in_array($node->type, $node_types, TRUE) && in_array($view_mode, $view_modes, TRUE)) {
+		// then look for chosen button types and prepare buttons
+		$button_types = variable_get('async_social_buttons', array());
+		$buttons = _async_social_buttons($node);
+		foreach ($button_types as $key => $value) {
+			// and finally add them
+			if($key === $value) {
+				$node->content['async_social'][$key] = array(
+					'#markup' => $buttons[$key]
+				);
+			}
 		}
-	}
-
-	// Display in link section
-	$show = (!empty($node->type) && in_array($node->type, $node_types, TRUE) && ($node->status == 1) && isset($links_array));  
-	if ($show) {
-		//$node->content['links']['async_social']['#markup'] = print theme('links', array('links' => $links_array));
-		$node->content['links']['async_social'] = array(
-			'#theme' => 'links',
-			'#links' => $links_array,
-			'#attributes' => array('class' => array('links', 'inline')),
-		);
 	}
 }
 
-// Helper function to create links
-function _async_social_links($node) {
+/**
+ * Implements hook_page_build().
+ */
+function async_social_page_build(&$page) {
+	// TO DO implement google lang codes https://developers.google.com/+/web/api/supported-languages?hl=de
+	$google_lang = 'ja';
+	$google_script = "window.___gcfg = {
+		lang: '" . $google_lang . "'};
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();";
+  drupal_add_js($google_script, array(
+    'type' => 'inline',
+    'scope' => 'footer'
+  ));
+
+  $twitter_script = 'window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));';
+  drupal_add_js($twitter_script, array(
+    'type' => 'inline',
+    'scope' => 'footer'
+  ));
+  // TO DO implement facebook lang codes http://www.facebook.com/translations/FacebookLocales.xml
+  // TO DO implement appID
+  $facebook_lang = 'ja_JP';
+  $facebook_script = '(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.async=true; js.src = "//connect.facebook.net/' . $facebook_lang . '/sdk.js#xfbml=1&version=v2.3";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, \'script\', \'facebook-jssdk\'));';
+	drupal_add_js($facebook_script, array(
+    'type' => 'inline',
+    'scope' => 'footer'
+  ));
+}
+
+/**
+ * Helper function to create buttons markup
+ * @param  object $node the node object
+ * @return array $buttons array to build markup on node view
+ */
+function _async_social_buttons($node) {
 	$url = url(drupal_get_path_alias('node/' . $node->nid), array('absolute' => true));
-
-	$facebook_share_url = 'http://www.facebook.com/sharer/sharer.php?u=' . $url;
-	$twitter_share_url = 'http://twitter.com/intent/tweet?text=' . $node->title . ' ' . $url;
-	$google_share_url = 'https://plus.google.com/share?url=' . $url;
-
-	$links = array(
-		'like'		=> array('title' => 'Facebook Like', 'href'	=> $facebook_share_url, 'attributes'	=> array('target' => '_blank'),),
-		'tweet' 	=> array('title' => 'Twitter Tweet', 'href'	=> $twitter_share_url, 'attributes' 	=> array('target' => '_blank'),),
-		'plusone'	=> array('title' => 'Google +1', 'href'			=> $google_share_url, 'attributes' 		=> array('target' => '_blank'),)
+	// TO DO implement Twitter lang codes https://dev.twitter.com/overview/general/adding-international-support-to-your-apps
+	$twitter_lang = 'ja';
+	$buttons = array(
+		'like'		=> '<div id="fb-root"></div><div class="fb-like" data-href="' . $url . '" data-layout="button_count" data-action="like" data-show-faces="true" data-share="false"></div>',
+		// TO DO set data-via attribute https://dev.twitter.com/web/tweet-button
+		'tweet' 	=> '<a class="twitter-share-button" href="https://twitter.com/share" data-lang="' . $twitter_lang . '" data-url="' . $url . '" data-text="' . $node->title . '">Tweet</a>',
+		'plusone'	=> '<g:plusone callback="plusone_vote" size="medium" href="' . $url . '"></g:plusone>'
 	);
-	return $links;
+	return $buttons;
+}
+
+/**
+ * Helper function to build select list options for view modes
+ * @return array $view_modes array of all available view modes
+ */
+function _view_modes() {
+	$entity_info = entity_get_info('node');
+	$view_modes = array();
+	foreach ($entity_info['view modes'] as $machine_name => $property) {
+		$view_modes[$machine_name] = $property['label'];
+	}
+	return $view_modes;
 }
