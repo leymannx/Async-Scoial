@@ -24,8 +24,8 @@ function async_social_menu() {
 function async_social_settings_form() {
 	$form['async_social_buttons'] = array(
 		'#type'          => 'checkboxes',
-		'#title'         => t('Social Networks'),
-		'#description'   => t('Display buttons for these social networks.'),
+		'#title'         => t('Button types'),
+		'#description'   => t('Display these buttons.'),
 		'#default_value' => variable_get('async_social_buttons', array()),
 		'#options'       => array('like' => 'Facebook Like', 'tweet' => 'Twitter Tweet', 'plusone' => 'Google +1')
 	);
@@ -39,13 +39,6 @@ function async_social_settings_form() {
 	$form['async_social_viewmodes'] = array(
 		'#type'          => 'checkboxes',
 		'#title'         => t('View modes'),
-		'#description'   => t('Display buttons for these view modes.'),
-		'#default_value' => variable_get('async_social_viewmodes', array()),
-		'#options'       => _view_modes()
-	);
-	$form['async_social_regions'] = array(
-		'#type'          => 'checkboxes',
-		'#title'         => t('Default theme regions'),
 		'#description'   => t('Display buttons for these view modes.'),
 		'#default_value' => variable_get('async_social_viewmodes', array()),
 		'#options'       => _view_modes()
