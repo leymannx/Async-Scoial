@@ -69,7 +69,7 @@ function async_social_settings_form() {
 		'#type'          => 'textfield',
 		'#title'         => t('Optional: Facebook AppID'),
 		'#description'   => t('Enter a Facebook AppID if you have one. It\'s not necessary to make the button work.<br />You only need it for tracking and customised button actions within your Facebook page.'),
-		'#default_value' => variable_get('async_social_facebook_appid', array()),
+		'#default_value' => variable_get('async_social_facebook_appid', ''),
 	);
 	return system_settings_form($form);
 }
