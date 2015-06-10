@@ -9,8 +9,8 @@
  */
 function async_social_menu() {
 
-	$items['admin/config/system/async_social'] = array(
-		'title' 						=> t('Async Social Buttons With Counters'),
+	$items['admin/config/services/async_social'] = array(
+		'title' 						=> t('Async Social'),
 		'description' 			=> 'Select social networks and node types to attach social buttons with counters',
 		'page callback' 		=> 'drupal_get_form',
 		'page arguments'   	=> array('async_social_settings_form'),
