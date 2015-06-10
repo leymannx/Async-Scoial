@@ -15,5 +15,6 @@ function async_social_uninstall() {
   variable_del('async_social_langcode_twitter');
   variable_del('async_social_langcode_google');
   variable_del('async_social_facebook_appid');
-  variable_del('async_social_twitter_name');
+  variable_del('async_social_twitter_via');
+  variable_del('async_social_twitter_related');
 }
