@@ -194,9 +194,15 @@ function _async_social_buttons($node) {
  * @return array $view_modes array of all available view modes
  */
 function _view_modes() {
+
 	$entity_info = entity_get_info('node');
 	$view_modes = array();
+	
 	foreach ($entity_info['view modes'] as $machine_name => $property) {
+
+		// skip rss, search_index, search_result and token
+    if (in_array($machine_name, array('rss', 'search_index', 'search_result', 'token'))) { continue; }
+
 		$view_modes[$machine_name] = $property['label'];
 	}
 	return $view_modes;
