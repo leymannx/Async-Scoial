@@ -32,6 +32,12 @@ function async_social_settings_form() {
 		'#default_value' => variable_get('async_social_buttons', array()),
 		'#options'       => array('like' => 'Facebook Like', 'tweet' => 'Twitter Tweet', 'plusone' => 'Google +1')
 	);
+	$form['async_social_facebook_share'] = array(
+		'#type'          => 'checkboxes',
+		'#title'         => t('Facebook Share Button'),
+		'#default_value' => variable_get('async_social_facebook_share', array()),
+		'#options'       => array('share' => 'Include Share Button')
+	);
 	$form['async_social_nodetypes'] = array(
 		'#type'          => 'checkboxes',
 		'#title'         => t('Node types'),
@@ -174,6 +180,8 @@ function _async_social_buttons($node) {
 
 	$url = url(drupal_get_path_alias('node/' . $node->nid), array('absolute' => true));
 
+	$faceboook_share 	= variable_get('async_social_facebook_share', '');
+	$faceboook_share  = ($faceboook_share['share'] === 'share') ? 'true' : 'false';
 	$twitter_lang 		= variable_get('async_social_langcode_twitter', 'en');
 	$twitter_lang 		= ($twitter_lang != 'en') ? ' data-lang="' . $twitter_lang . '"' : '';
 	$twitter_via 			= variable_get('async_social_twitter_via', '');
@@ -182,7 +190,7 @@ function _async_social_buttons($node) {
 	$twitter_related  = !empty($twitter_related) ? ' data-related="' . $twitter_related . '"' : '';
 
 	$buttons = array(
-		'like'		=> '<div class="fb-like" data-href="' . $url . '" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false"></div>',
+		'like'		=> '<div class="fb-like" data-href="' . $url . '" data-layout="button_count" data-action="like" data-show-faces="false" data-share="' . $faceboook_share . '"></div>',
 		'tweet' 	=> '<a class="twitter-share-button" href="https://twitter.com/share"' . $twitter_lang . ' data-url="' . $url . '" data-text="' . $node->title . '"' . $twitter_via . $twitter_related . '></a>',
 		'plusone'	=> '<g:plusone callback="plusone_vote" size="medium" href="' . $url . '"></g:plusone>'
 	);

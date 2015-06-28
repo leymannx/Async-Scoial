@@ -9,6 +9,7 @@
  */
 function async_social_uninstall() {
   variable_del('async_social_buttons');
+  variable_del('async_social_facebook_share');
   variable_del('async_social_nodetypes');
   variable_del('async_social_viewmodes');
   variable_del('async_social_langcode_facebook');
