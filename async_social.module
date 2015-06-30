@@ -10,88 +10,51 @@
 function async_social_menu() {
 
 	$items['admin/config/services/async_social'] = array(
-		'title' 						=> t('Async Social'),
+		'title' 						=> 'Async Social',
 		'description' 			=> 'Select social networks and node types to attach social buttons with counters',
 		'page callback' 		=> 'drupal_get_form',
 		'page arguments'   	=> array('async_social_settings_form'),
 		'access arguments'	=> array('administer site configuration'),
+		'file'							=> 'async_social.admin.inc'
 	);
+	$items['admin/config/services/async_social/settings'] = array(
+		'title' 						=> t('Settings'),
+		'description' 			=> 'Select social networks and node types to attach social buttons with counters',
+    'type' 							=> MENU_DEFAULT_LOCAL_TASK,
+    'weight' 						=> 10,
+	);
+	$items['admin/config/services/async_social/facebook'] = array(
+		'title' 						=> t('Facebook'),
+		'description' 			=> 'Select social networks and node types to attach social buttons with counters',
+		'page callback' 		=> 'drupal_get_form',
+		'page arguments'   	=> array('async_social_facebook_form'),
+		'access arguments'	=> array('administer site configuration'),
+    'type' 							=> MENU_LOCAL_TASK,
+    'weight' 						=> 20,
+    'file'							=> 'async_social.admin.inc'
+	);
+	$items['admin/config/services/async_social/twitter'] = array(
+		'title' 						=> t('Twitter'),
+		'description' 			=> 'Select social networks and node types to attach social buttons with counters',
+		'page callback' 		=> 'drupal_get_form',
+		'page arguments'   	=> array('async_social_twitter_form'),
+		'access arguments'	=> array('administer site configuration'),
+    'type' 							=> MENU_LOCAL_TASK,
+    'weight' 						=> 30,
+		'file'							=> 'async_social.admin.inc'
+	);
+	$items['admin/config/services/async_social/google'] = array(
+		'title' 						=> t('Google'),
+		'description' 			=> 'Select social networks and node types to attach social buttons with counters',
+		'page callback' 		=> 'drupal_get_form',
+		'page arguments'   	=> array('async_social_google_form'),
+		'access arguments'	=> array('administer site configuration'),
+    'type' 							=> MENU_LOCAL_TASK,
+    'weight' 						=> 40,
+		'file'							=> 'async_social.admin.inc'
+	);
+	
 	return $items;
-}
-
-/**
- * Implements hook_form().
- */
-function async_social_settings_form() {
-
-	module_load_include('inc', 'async_social', 'langcodes');
-	$form['async_social_buttons'] = array(
-		'#type'          => 'checkboxes',
-		'#title'         => t('Button types'),
-		'#description'   => t('Display these buttons.'),
-		'#default_value' => variable_get('async_social_buttons', array()),
-		'#options'       => array('like' => 'Facebook Like', 'tweet' => 'Twitter Tweet', 'plusone' => 'Google +1')
-	);
-	$form['async_social_facebook_share'] = array(
-		'#type'          => 'checkboxes',
-		'#title'         => t('Facebook Share Button'),
-		'#default_value' => variable_get('async_social_facebook_share', array()),
-		'#options'       => array('share' => 'Include Share Button')
-	);
-	$form['async_social_nodetypes'] = array(
-		'#type'          => 'checkboxes',
-		'#title'         => t('Node types'),
-		'#description'   => t('Display buttons for these node types.'),
-		'#default_value' => variable_get('async_social_nodetypes', array()),
-		'#options'       => node_type_get_names()
-	);
-	$form['async_social_viewmodes'] = array(
-		'#type'          => 'checkboxes',
-		'#title'         => t('View modes'),
-		'#description'   => t('Display buttons for these view modes.'),
-		'#default_value' => variable_get('async_social_viewmodes', array()),
-		'#options'       => _async_social_view_modes()
-	);
-	$form['async_social_langcode_facebook'] = array(
-		'#type'          => 'select',
-		'#title'         => t('Optional: Facebook Language'),
-		'#description'   => t('Please choose a language for Facebook\'s button.<br />Will fall back to English if no language is chosen.'),
-		'#default_value' => variable_get('async_social_langcode_facebook', array()),
-		'#options'       => async_social_langcode_options('facebook')
-	);
-	$form['async_social_langcode_twitter'] = array(
-		'#type'          => 'select',
-		'#title'         => t('Optional: Twitter Language'),
-		'#description'   => t('Please choose a language for Twitter\'s button.<br />Will fall back to English if no language is chosen.'),
-		'#default_value' => variable_get('async_social_langcode_twitter', array()),
-		'#options'       => async_social_langcode_options('twitter')
-	);
-	$form['async_social_langcode_google'] = array(
-		'#type'          => 'select',
-		'#title'         => t('Optional: Google Language'),
-		'#description'   => t('Please choose a language for Google\'s button.<br />Will fall back to English if no language is chosen.'),
-		'#default_value' => variable_get('async_social_langcode_google', array()),
-		'#options'       => async_social_langcode_options('google')
-	);
-	$form['async_social_facebook_appid'] = array(
-		'#type'          => 'textfield',
-		'#title'         => t('Optional: Facebook AppID'),
-		'#description'   => t('Enter a Facebook AppID if you have one. It\'s not necessary to make the button work.<br />You only need it for tracking and customised button actions within your Facebook page.'),
-		'#default_value' => variable_get('async_social_facebook_appid', ''),
-	);
-	$form['async_social_twitter_via'] = array(
-		'#type'          => 'textfield',
-		'#title'         => t('Optional: Twitter Username (without @-symbol)'),
-		'#description'   => t('Appears appended to Tweet text as "via @username". It\'s not necessary to make the button work.<br />You only need it for referencing the tweets to you.'),
-		'#default_value' => variable_get('async_social_twitter_via', ''),
-	);
-	$form['async_social_twitter_related'] = array(
-		'#type'          => 'textfield',
-		'#title'         => t('Optional: Twitter Related (without @-symbols)'),
-		'#description'   => t('A comma-separated list (with no spaces) of Twitter usernames related to the content of the shared URI.<br /> Not necessary to make the button work. An included Twitter account may appear in a list of recommended accounts to follow.'),
-		'#default_value' => variable_get('async_social_twitter_related', ''),
-	);
-	return system_settings_form($form);
 }
 
 /**
@@ -134,7 +97,7 @@ function async_social_node_view($node, $view_mode) {
  */
 function async_social_page_build(&$page) {
 
-	$google_lang 		= variable_get('async_social_langcode_google', 'en-US');
+	$google_lang 		= variable_get('async_social_google_language', 'en-US');
 	$google_script 	= "window.___gcfg = {
 		lang: '" . $google_lang . "'};
 		(function() {
@@ -153,7 +116,7 @@ function async_social_page_build(&$page) {
     'scope' => 'footer'
   ));
 
-  $facebook_lang 		= variable_get('async_social_langcode_facebook', 'en_US');
+  $facebook_lang 		= variable_get('async_social_facebook_language', 'en_US');
   $facebook_appid 	= variable_get('async_social_facebook_appid', '');
   $facebook_appid 	= !empty($facebook_appid) ? '&appId=' . $facebook_appid : '';
   $facebook_script 	= '(function(d, s, id) {
@@ -181,8 +144,8 @@ function _async_social_buttons($node) {
 	$url = url(drupal_get_path_alias('node/' . $node->nid), array('absolute' => true));
 
 	$faceboook_share 	= variable_get('async_social_facebook_share', '');
-	$faceboook_share  = ($faceboook_share['share'] === 'share') ? 'true' : 'false';
-	$twitter_lang 		= variable_get('async_social_langcode_twitter', 'en');
+	$faceboook_share  = ($faceboook_share == TRUE) ? 'true' : 'false';
+	$twitter_lang 		= variable_get('async_social_twitter_language', 'en');
 	$twitter_lang 		= ($twitter_lang != 'en') ? ' data-lang="' . $twitter_lang . '"' : '';
 	$twitter_via 			= variable_get('async_social_twitter_via', '');
 	$twitter_via 			= !empty($twitter_via) ? ' data-via="' . $twitter_via . '"' : '';
@@ -194,6 +157,7 @@ function _async_social_buttons($node) {
 		'tweet' 	=> '<a class="twitter-share-button" href="https://twitter.com/share"' . $twitter_lang . ' data-url="' . $url . '" data-text="' . $node->title . '"' . $twitter_via . $twitter_related . '></a>',
 		'plusone'	=> '<g:plusone callback="plusone_vote" size="medium" href="' . $url . '"></g:plusone>'
 	);
+
 	return $buttons;
 }
 
@@ -207,11 +171,11 @@ function _async_social_view_modes() {
 	$view_modes = array();
 	
 	foreach ($entity_info['view modes'] as $machine_name => $property) {
-
 		// skip rss, search_index, search_result and token
     if (in_array($machine_name, array('rss', 'search_index', 'search_result', 'token'))) { continue; }
 
 		$view_modes[$machine_name] = $property['label'];
 	}
+
 	return $view_modes;
 }
