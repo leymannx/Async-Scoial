@@ -50,7 +50,7 @@ function async_social_settings_form() {
 		'#title'         => t('View modes'),
 		'#description'   => t('Display buttons for these view modes.'),
 		'#default_value' => variable_get('async_social_viewmodes', array()),
-		'#options'       => _view_modes()
+		'#options'       => _async_social_view_modes()
 	);
 	$form['async_social_langcode_facebook'] = array(
 		'#type'          => 'select',
@@ -201,7 +201,7 @@ function _async_social_buttons($node) {
  * Helper function to build select list options for view modes
  * @return array $view_modes array of all available view modes
  */
-function _view_modes() {
+function _async_social_view_modes() {
 
 	$entity_info = entity_get_info('node');
 	$view_modes = array();
