@@ -10,5 +10,6 @@ This is a custom Drupal module to attach social network buttons with counters (L
 * Go to admin/config/system/async_social and select social networks and node types
 
 ### TO DO
-* build tabs on settings page
-* validate Twitter username and FB AppID
+* validate Twitter username, FB AppID and other values
+* implement VK and other social networks
+* implement button types to choose from (big, small, nocounter, ...)
