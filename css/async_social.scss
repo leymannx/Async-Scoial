@@ -8,5 +8,8 @@
 		display: inline-block;
 		vertical-align: top;
 		margin-right: 25px;
+    &.plusone {
+      margin-right: -5px;
+    }
 	}
 }

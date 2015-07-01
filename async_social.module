@@ -53,6 +53,16 @@ function async_social_menu() {
     'weight' 						=> 40,
 		'file'							=> 'async_social.admin.inc'
 	);
+  $items['admin/config/services/async_social/vk'] = array(
+    'title'             => t('VK'),
+    'description'       => 'Select social networks and node types to attach social buttons with counters',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('async_social_vk_form'),
+    'access arguments'  => array('administer site configuration'),
+    'type'              => MENU_LOCAL_TASK,
+    'weight'            => 50,
+    'file'              => 'async_social.admin.inc'
+  );
 	
 	return $items;
 }
@@ -88,8 +98,6 @@ function async_social_node_view($node, $view_mode) {
 			}
 		}
 	}
-	// $default_theme = variable_get('theme_default', NULL);
-	// $regions = system_region_list($default_theme, REGIONS_ALL);
 }
 
 /**
@@ -107,13 +115,13 @@ function async_social_page_build(&$page) {
 		})();";
   drupal_add_js($google_script, array(
     'type'	=> 'inline',
-    'scope'	=> 'footer'
+    'scope'	=> 'header'
   ));
 
   $twitter_script = 'window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));';
   drupal_add_js($twitter_script, array(
     'type'	=> 'inline',
-    'scope' => 'footer'
+    'scope' => 'header'
   ));
 
   $facebook_lang 		= variable_get('async_social_facebook_language', 'en_US');
@@ -128,10 +136,38 @@ function async_social_page_build(&$page) {
   }(document, \'script\', \'facebook-jssdk\'));';
 	drupal_add_js($facebook_script, array(
     'type' 	=> 'inline',
-    'scope' => 'footer'
+    'scope' => 'header'
+  ));
+
+  $vk_apiid = variable_get('async_social_vk_apiid', '');
+  drupal_add_js('//vk.com/js/api/openapi.js?116', 'external');
+  $vk_script = 'VK.init({apiId: ' . $vk_apiid . ', onlyWidgets: true});';
+  drupal_add_js($vk_script, array(
+    'type'  => 'inline',
+    'scope' => 'header'
   ));
 
   drupal_add_css(drupal_get_path('module', 'async_social') . '/css/async_social.css');
+}
+
+/**
+ * Implements hook_page_alter().
+ *
+ * Adds a post_render callback to add FB root and VK transport div right after opening body tag.
+ */
+function async_social_page_alter(&$page) {
+  $page['#post_render'][] = 'async_social_callback';
+}
+
+/**
+ * Implements callback_post_render().
+ *
+ * Inserts snippets immediately following the opening body tag.
+ */
+function async_social_callback(&$children, $elements) {
+  $snippet = '<div id="vk_api_transport"></div><div id="fb-root"></div>';
+  $children = preg_replace('@<body[^>]*>@', '$0' . $snippet, $children, 1);
+  return $children;
 }
 
 /**
@@ -155,7 +191,8 @@ function _async_social_buttons($node) {
 	$buttons = array(
 		'like'		=> '<div class="fb-like" data-href="' . $url . '" data-layout="button_count" data-action="like" data-show-faces="false" data-share="' . $faceboook_share . '"></div>',
 		'tweet' 	=> '<a class="twitter-share-button" href="https://twitter.com/share"' . $twitter_lang . ' data-url="' . $url . '" data-text="' . $node->title . '"' . $twitter_via . $twitter_related . '></a>',
-		'plusone'	=> '<g:plusone callback="plusone_vote" size="medium" href="' . $url . '"></g:plusone>'
+		'plusone'	=> '<g:plusone callback="plusone_vote" size="medium" href="' . $url . '"></g:plusone>',
+    'vk'      => '<div id="vk_like"></div><script type="text/javascript">VK.Widgets.Like("vk_like", {type: "button", height: 18});</script>'
 	);
 
 	return $buttons;

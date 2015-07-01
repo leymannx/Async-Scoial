@@ -18,7 +18,12 @@ function async_social_settings_form() {
 		'#title'         => t('Button types'),
 		'#description'   => t('Display these buttons.'),
 		'#default_value' => variable_get('async_social_buttons', array()),
-		'#options'       => array('like' => 'Facebook Like', 'tweet' => 'Twitter Tweet', 'plusone' => 'Google +1')
+		'#options'       => array(
+			'like' 		=> 'Facebook Like',
+			'tweet' 	=> 'Twitter Tweet',
+			'plusone' => 'Google +1',
+			'vk'			=> 'VK'
+		)
 	);
 	$form['async_social_nodetypes'] = array(
 		'#type'          => 'checkboxes',
@@ -116,6 +121,35 @@ function async_social_google_form() {
 		'#description'   => t('Please choose a language for Google\'s button.<br />Will fall back to English if no language is chosen.'),
 		'#default_value' => variable_get('async_social_google_language', array()),
 		'#options'       => async_social_langcode_options('google')
+	);
+
+	return system_settings_form($form);
+}
+
+/**
+ * Form builder; Configure optional VK settings.
+ *
+ * @ingroup forms
+ * @see system_settings_form()
+ */
+function async_social_vk_form() {
+
+	$form['sasync_social_vk_text'] = array(
+  	'#markup' => '<label for="vk-notice">Please note:</label><div id="vk-notice">
+  	<p>VK buttons don\'t work without an API ID.<br />
+  	And at the same time the VK button language<br/>
+  	depends on the language that is set for<br />
+  	the VK account the API ID was created with.</p>
+  	<p>You may also pay attention at VK to set<br />
+  	a corresponding base domain during development<br />
+  	to test the button in your local environment<br />
+  	as well.</p></div>'
+	);
+	$form['async_social_vk_apiid'] = array(
+		'#type'          => 'textfield',
+		'#title'         => t('Mandatory: VK API ID'),
+		'#description'   => t('Enter a VK API ID. It\'s mandatory to make the VK button work.'),
+		'#default_value' => variable_get('async_social_vk_apiid', ''),
 	);
 
 	return system_settings_form($form);

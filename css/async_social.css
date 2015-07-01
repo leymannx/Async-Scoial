@@ -11,3 +11,7 @@
   vertical-align: top;
   margin-right: 25px;
 }
+/* line 11, async_social.scss */
+#async-social-buttons .async-social-button.plusone {
+  margin-right: -5px;
+}
